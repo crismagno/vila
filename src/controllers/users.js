@@ -148,15 +148,11 @@ module.exports = app => {
         const { path: avatar } = req.file
 
         try {
-            let userUpdated = await app.db('users').update({ avatar }).where({ id }).returning('*')
-            
-            let payload = {
-                ...userUpdated,
-                tokenCreatedAt: Date.now()
-            }
+            let user = await app.db('users').where({ id }).first()
 
-            let token = jwt.encode(payload, process.env.AUTH_SECRET)
-            userUpdated['token'] = token
+            if (!user) return res.status(404).json({ error: 'User not a found' })
+
+            let userUpdated = await app.db('users').update({ avatar }).where({ id }).returning('*')
             
             return res.status(200).json({ ...userUpdated[0] })
         } catch (error) {

@@ -7,7 +7,6 @@ const db_postgres = require('./config/db_postgres')
 
 app.db = db_postgres
 
-
 // carregar rotas
 consign({
     cwd: __dirname + '/',

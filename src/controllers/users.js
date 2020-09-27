@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const saltBounds = 10
 const jwt = require('jwt-simple')
+const moment = require('moment');
 
 module.exports = app => {
 
@@ -17,6 +18,7 @@ module.exports = app => {
                 return res.status(400).json({ error: 'User invalid'})
             } else {
                 user.password = bcrypt.hashSync(user.password, saltBounds)
+                user.created_at = moment().utc().format();
                 await app.db('users').insert(user)
                 return res.status(200).json({ success: 'Save user success'})
             }
@@ -112,7 +114,8 @@ module.exports = app => {
                 name,
                 email: newEmail,
                 password: bcrypt.hashSync(password, saltBounds),
-                admin
+                admin,
+                updated_at: moment().utc().format()
             }
 
             let userUpdated = await app.db('users').update(newUser).where({ id }).returning('*')
@@ -152,7 +155,7 @@ module.exports = app => {
 
             if (!user) return res.status(404).json({ error: 'User not a found' })
 
-            let userUpdated = await app.db('users').update({ avatar }).where({ id }).returning('*')
+            let userUpdated = await app.db('users').update({ avatar, updated_at: moment().utc().format() }).where({ id }).returning('*')
             
             return res.status(200).json({ ...userUpdated[0] })
         } catch (error) {

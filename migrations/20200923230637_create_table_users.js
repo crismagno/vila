@@ -7,6 +7,8 @@ exports.up = function(knex) {
         table.string('password').notNull()
         table.string('avatar')
         table.boolean('admin').notNull().default(false)
+        table.timestamp('created_at', { useTz: true })
+        table.timestamp('updated_at', { useTz: true })
     })
 };
 
